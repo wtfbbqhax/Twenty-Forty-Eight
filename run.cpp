@@ -7,38 +7,40 @@
 #include <iostream>
 #include <stdio.h>
 #include "GameBoard.h"
-using namespace std;
-using namespace Game;
-int main(){
 
-	GameBoard* game=new GameBoard();
-	int move=1;
-	bool made=false;
-	while((move!=0)&&(game->gameOver()))
+using namespace std;
+
+
+int main(int argc, char *argv[])
+{
+    Game::Board * game = new Game::Board();
+	int move = 1;
+	bool made = false;
+
+	while ( (move != 0) && game->gameOver() )
 	{
 		game->printBoard();
-		cout<<"Enter a move";
-		cin>>move;
-		while(((move%2)!=0)||(move>9))
+
+		cout << "Enter a move: ";
+		cin >> move;
+
+		while ( (move % 2) || move > 9 )
 		{
-			cout<<"Invalid Move! Try agian\n";
-			cin>>move;
+			cout << "[!] Nope" << endl;
+			cin >> move;
 		}
 
-		if (move!=0)
-		{
-			made=game->move(move);
-		}
-		if(made==false)
-		{
-			cout<<"Invalid";
-		}
+		if ( move )
+			made = game->move(move);
+
+		if ( !made )
+			cout << "[!] Invalid" << endl;
 	}
-	cout<<"Final Score!\n";
+
+	cout << "[!] Final Score!" << endl;
 	game->printBoard();
+
 	return 1;
-
-
 }
 
 

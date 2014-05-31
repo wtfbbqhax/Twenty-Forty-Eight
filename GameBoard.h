@@ -5,26 +5,25 @@
  *      Author: kmccormick
  */
 
-#ifndef GAMEBOARD_H_
-#define GAMEBOARD_H_
+#pragma once
 
 namespace Game {
+class Board {
+  public:
 
-class GameBoard {
-public:
-	GameBoard();
-	virtual ~GameBoard();
+	Board();
+	virtual ~Board();
+
 	bool move(int direction);
 	void printBoard();
 	//int* getBoard();
 	bool gameOver();
-private:
+
+  private:
+
 	bool setRandCell();
 	bool peek(int direction);
 	unsigned int board[16];
 	bool over;
-
 };
-
-} /* namespace Game */
-#endif /* GAMEBOARD_H_ */
+} // namespace Game
