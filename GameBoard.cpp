@@ -1,9 +1,4 @@
-/*
- * GameBoard.cpp
- *
- *  Created on: May 15, 2014
- *      Author: kmccormick
- */
+/* GameBoard.cpp */
 
 // wtfbbqhax, 05-31-2014:
 //  * Unrolling loops will ease the eye strain
@@ -25,15 +20,15 @@ Board::Board()
     {
         board[i] = 0;
     }
-    this->setRandCell();
-    this->setRandCell();
+    this->SetRandomTile();
+    this->SetRandomTile();
     over = false;
 }
 
 // TODO Auto-generated destructor stub
 Board::~Board() { }
 
-bool Board::move(int direction)
+bool Board::Move(int direction)
 {
     int i = 0;
     int j = 0;
@@ -100,7 +95,7 @@ bool Board::move(int direction)
                 }
             }
 
-            this->setRandCell();
+            this->SetRandomTile();
             break;
 
         case 6:
@@ -161,7 +156,7 @@ bool Board::move(int direction)
                 }
             }
 
-            this->setRandCell();
+            this->SetRandomTile();
             break;
 
         case 2:
@@ -223,7 +218,7 @@ bool Board::move(int direction)
                 }
             }
 
-            this->setRandCell();
+            this->SetRandomTile();
             break;
 
         //move left
@@ -286,7 +281,7 @@ bool Board::move(int direction)
                 }
             }
 
-            this->setRandCell();
+            this->SetRandomTile();
             break;
 
         default:
@@ -296,7 +291,7 @@ bool Board::move(int direction)
     return move;
 }
 
-void Board::printBoard()
+void Board::Print()
 {
     for ( int i = 0; i < 16; i++ )
     {
@@ -308,7 +303,7 @@ void Board::printBoard()
 }
 
 // TODO Split this up
-bool Board::setRandCell()
+bool Board::SetRandomTile()
 {
     bool full = true;
 
@@ -339,18 +334,18 @@ bool Board::setRandCell()
 }
 
 // Looks over complicated
-bool Board::gameOver()
+bool Board::GameOver()
 {
     for ( int i = 2; i < 10; i++ )
     {
-        if ( this->peek(i) )
+        if ( this->Peek(i) )
             return true;
     }
     return false;
 }
 
 // Check if there are any moves?
-bool Board::peek(int direction)
+bool Board::Peek(int direction)
 {
     int i = 0;
     int j = 0;

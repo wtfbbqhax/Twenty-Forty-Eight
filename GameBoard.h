@@ -1,9 +1,4 @@
-/*
- * GameBoard.h
- *
- *  Created on: May 15, 2014
- *      Author: kmccormick
- */
+/* GameBoard.h */
 
 #pragma once
 
@@ -14,16 +9,15 @@ class Board {
 	Board();
 	virtual ~Board();
 
-	bool move(int direction);
-	void printBoard();
-	//int* getBoard();
-	bool gameOver();
+	bool Move(int direction);
+	void Print();
+	bool GameOver();
 
   private:
 
-	bool setRandCell();
-	bool peek(int direction);
-	unsigned int board[16];
+	bool SetRandomTile();
+	bool Peek(int direction);
+	unsigned board[16];
 	bool over;
 };
 } // namespace Game
