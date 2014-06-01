@@ -1,0 +1,6 @@
+vim: ft=changelog
+
+2014-05-31 Victor Roemer <wtfbbqhax@users.noreply.github.com>
+    * Invalid moves will cause the board to update.
+    * Per Kevin; merging tiles '2 2 2 2' doesn't work.
+
