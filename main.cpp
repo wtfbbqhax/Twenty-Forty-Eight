@@ -10,16 +10,15 @@
 
 using namespace std;
 
-
 int main(int argc, char *argv[])
 {
-    Game::Board * game = new Game::Board();
+    Game::Board board;
 	int move = 1;
 	bool made = false;
 
-	while ( (move != 0) && game->gameOver() )
+	while ( (move != 0) && board.GameOver() )
 	{
-		game->printBoard();
+		board.Print();
 
 		cout << "Enter a move: ";
 		cin >> move;
@@ -31,14 +30,14 @@ int main(int argc, char *argv[])
 		}
 
 		if ( move )
-			made = game->move(move);
+			made = board.Move(move);
 
 		if ( !made )
 			cout << "[!] Invalid" << endl;
 	}
 
 	cout << "[!] Final Score!" << endl;
-	game->printBoard();
+	board.Print();
 
 	return 1;
 }
