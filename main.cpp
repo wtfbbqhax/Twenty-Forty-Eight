@@ -1,46 +1,59 @@
-/*
- * run.cpp
- *
- *  Created on: May 16, 2014
- *      Author: kmccormick
- */
-#include <iostream>
+/* main.cpp */ 
+
 #include <stdio.h>
-#include "GameBoard.h"
+#include <unistd.h>
+#include <ctype.h>
+
+#include <iostream>
+#include "game.h"
 
 using namespace std;
 
-int main(int argc, char *argv[])
+int main( int argc, char *argv[] )
 {
+
+    //cout << "\033[?25h\033[0m\033[H\033[2J\n\n";
     Game::Board board;
-	int move = 1;
-	bool made = false;
-
-	while ( (move != 0) && board.GameOver() )
-	{
-		board.Print();
-
-		cout << "Enter a move: ";
-		cin >> move;
-
-		while ( (move % 2) || move > 9 )
-		{
-			cout << "[!] Nope" << endl;
-			cin >> move;
-		}
-
-		if ( move )
-			made = board.Move(move);
-
-		if ( !made )
-			cout << "[!] Invalid" << endl;
-	}
-
-	cout << "[!] Final Score!" << endl;
 	board.Print();
 
-	return 1;
+    //cout << "\nPress '?' to display usage.\n";
+
+    int c;
+	while ( (c = tolower(getchar())) != 'q' )
+    {
+        getchar(); // consume newline
+
+        bool ok;
+        switch (c) {
+        case 'k': ok=board.Move(Game::MoveUp); break;
+        case 'j': ok=board.Move(Game::MoveDown); break;
+        case 'h': ok=board.Move(Game::MoveLeft); break;
+        case 'l': ok=board.Move(Game::MoveRight); break;
+        case '?':
+            cout << "\nUsage:\n";
+            cout << "_input is case insensitive_\n\n";
+            cout << "  k Up\n";
+            cout << "  j Down\n";
+            cout << "  h Left\n";
+            cout << "  l Right\n";
+            cout << "  ? Help, Q Quit\n\n";
+            continue;
+        }
+
+        if ( !ok )
+            cout << "\nNope\n\n";
+
+	    board.Print();
+
+        //cout << "print board" << endl;
+        //if ( board.GameOver() )
+        //    break;
+
+        usleep(5000);
+	}
+
+	//cout << "[!] Final Score!" << endl;
+	board.Print();
+
+	return 0;
 }
-
-
-
