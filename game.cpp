@@ -5,6 +5,7 @@
 //  * #define MOVE_UP, MOVE_DOWN etc..
 //  * Move board rendering to a separate class
 
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -172,27 +173,18 @@ bool Board::Move( MoveDir dir )
 
 void Board::Print()
 {
-#if 0
-printf(
-    "\033[?25h\033[0m\033[H\033[2J\n\n"
-    "    ######  ######  ######  ######\n"
-    "    #%4d#  #%4d#  #%4d#  #%4d#\n"
-    "    ######  ######  ######  ######\n\n"
-    "    ######  ######  ######  ######\n"
-    "    #%4d#  #%4d#  #%4d#  #%4d#\n"
-    "    ######  ######  ######  ######\n\n"
-    "    ######  ######  ######  ######\n"
-    "    #%4d#  #%4d#  #%4d#  #%4d#\n"
-    "    ######  ######  ######  ######\n\n"
-    "    ######  ######  ######  ######\n"
-    "    #%4d#  #%4d#  #%4d#  #%4d#\n"
-    "    ######  ######  ######  ######\n\n",
-    "\033[H"
-#endif
-    printf("   %d %d %d %d\n", board[0][0], board[1][0], board[2][0], board[3][0]);
-    printf("   %d %d %d %d\n", board[0][1], board[1][1], board[2][1], board[3][1]);
-    printf("   %d %d %d %d\n", board[0][2], board[1][2], board[2][2], board[3][2]);
-    printf("   %d %d %d %d\n", board[0][3], board[1][3], board[2][3], board[3][3]);
+    //puts("\033[?25h\033[0m\033[H\033[2J");
+    for ( int y=0; y<4; y++ )
+    {
+        for ( int x=0; x<4; x++ )
+        {
+            if ( !board[x][y] )
+                printf(". ");
+            else
+                printf("%d ", board[x][y]);
+        }
+        puts("");
+    }
 }
 
 // TODO Split this up
