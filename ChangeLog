@@ -1,0 +1,15 @@
+vim: ft=changelog
+
+2014-06-07 Victor Roemer <wtfbbqhax@users.noreply.github.com>
+	* Print screen many times durring a move. IMO this feels smoother.  
+	* game.cpp: merge() tiles now merged in the correct direction.
+	* Deleted "namespace Game"
+	* Renamed "class Board" to "class Game"
+
+2014-06-05 Victor Roemer <wtfbbqhax@users.noreply.github.com>
+	* None
+
+2014-05-31 Victor Roemer <wtfbbqhax@users.noreply.github.com>
+    * Invalid moves will cause the board to update.
+    * Per Kevin; merging tiles '2 2 2 2' doesn't work.
+

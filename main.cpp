@@ -5,6 +5,9 @@
 #include <ctype.h>
 
 #include <iostream>
+
+#include <termios.h>
+
 #include "game.h"
 
 using namespace std;
@@ -12,48 +15,40 @@ using namespace std;
 int main( int argc, char *argv[] )
 {
 
-    //cout << "\033[?25h\033[0m\033[H\033[2J\n\n";
-    Game::Board board;
-	board.Print();
+    Game game;
 
-    //cout << "\nPress '?' to display usage.\n";
+    struct termios saved, term;
+    tcgetattr(STDIN_FILENO, &saved);
+    term = saved;
 
-    int c;
-	while ( (c = tolower(getchar())) != 'q' )
+    term.c_lflag &= ~(ECHO|ICANON);
+    //cfmakeraw(&term);
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
+
+    int c = 'r';
+    do 
     {
-        getchar(); // consume newline
-
-        bool ok;
         switch (c) {
-        case 'k': ok=board.Move(Game::MoveUp); break;
-        case 'j': ok=board.Move(Game::MoveDown); break;
-        case 'h': ok=board.Move(Game::MoveLeft); break;
-        case 'l': ok=board.Move(Game::MoveRight); break;
-        case '?':
-            cout << "\nUsage:\n";
-            cout << "_input is case insensitive_\n\n";
-            cout << "  k Up\n";
-            cout << "  j Down\n";
-            cout << "  h Left\n";
-            cout << "  l Right\n";
-            cout << "  ? Help, Q Quit\n\n";
-            continue;
+            case 'r': game.Reset(); break;
+            case 'k': game.Move(Game::UP); break;
+            case 'h': game.Move(Game::LEFT); break;
+            case 'j': game.Move(Game::DOWN); break;
+            case 'l': game.Move(Game::RIGHT); break;
+            case 'q': goto quit;
         }
-
-        if ( !ok )
-            cout << "\nNope\n\n";
-
-	    board.Print();
-
-        //cout << "print board" << endl;
-        //if ( board.GameOver() )
-        //    break;
-
+	    game.Print();
+        //cout << "  k:UP  j:DOWN  h:LEFT  l:RIGHT"
+        //     << "  r:RESET  q:QUIT\n";
+//        if ( game.GameOver() )
+//            break;
         usleep(5000);
-	}
+	} while ( (c = tolower(getchar())) );
+
+quit:
+    tcsetattr(STDIN_FILENO, TCSANOW, &saved);
 
 	//cout << "[!] Final Score!" << endl;
-	board.Print();
+	//board.Print();
 
 	return 0;
 }

@@ -1,26 +1,25 @@
 /* GameBoard.h */
 #pragma once
 
-namespace Game {
+#define COLS (4)
+#define ROWS (4)
 
-enum MoveDir {
-    MoveUp, MoveDown, MoveLeft, MoveRight
-};
-
-class Board {
+class Game {
   private:
-	unsigned board[4][4];
-	bool over;
-
+	unsigned board[COLS][ROWS];
 	bool Update(void);
-	bool Peek( MoveDir );
+	bool Peek(void);
 
   public:
-	Board();
-	virtual ~Board();
-	bool Move( MoveDir );
+    enum Direction {
+        UP, DOWN, LEFT, RIGHT 
+    };
+
+	//Game();
+    //virtual ~Game();
+
+    void Reset(void);
+	bool Move( Direction );
 	void Print(void);
 	bool GameOver(void);
 };
-
-} // namespace Game

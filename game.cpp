@@ -11,26 +11,21 @@
 #include <time.h>
 #include <cstring>
 
+#include <unistd.h>
 #include <assert.h>
 
 #include "game.h"
 
-namespace Game {
-
-Board::Board()
+void Game::Reset(void)
 {
-    // TODO Auto-generated constructor stub
-    for ( int x=0; x<4; x++ )
-    for ( int y=0; y<4; y++ )
-        board[x][y] = 0;
+    memset(board, 0, sizeof(board));
+//    for ( int x=0; x<COLS; x++ )
+//    for ( int y=0; y<ROWS; y++ )
+//        board[x][y] = 0;
 
     this->Update();
     this->Update();
-    over = false;
 }
-
-// TODO Auto-generated destructor stub
-Board::~Board() { }
 
 static void slide(unsigned ln[], int n)
 {
@@ -44,125 +39,130 @@ static void slide(unsigned ln[], int n)
         // a,_,_,b  _,a,_,b  _,_,a,b
         // 2,0,0,0  2,2,0,0  2,2,0,0
 
-        if (!ln[a])
-        {
+        if (!ln[a]) {
             if (!ln[b])
                 continue;
-
-            ln[a++] = ln[b];
+            ln[a] = ln[b];
             ln[b] = 0;
         }
-        else
-        {
-            a++;
-        }
+
+        a++;
     }
 }
 
 static void merge(unsigned ln[], int n)
 {
-    if ( n<2 )
-        return;
+    // a b      a b      a b    
+    // 2|2|2|2  4|2|2|⁄  8|4|2|2
+    //     a b    a b      a b  
+    // 4|⁄|2|2  4|2|2|⁄  8|4|2|2
+    //     a b    a b        a b
+    // 4|⁄|4|⁄  4|4|⁄|⁄  8|4|2|2
+    //                       a b
+    //                   8|4|4|⁄
+    //
+    if (n<2) return;
 
-    unsigned &t1 = ln[n-1];
-    unsigned &t2 = ln[n-2];
+    unsigned &a = ln[0];
+    unsigned &b = ln[1];
+    int mov = 1;
 
-    // _  _ t2 t1   n=4   _  _ t2 t1   n=4
-    // 2  2  2  0         2  2  2  2
-    // _ t2 t1  _   n=3   2  2  4  0
-    // 2  2  2  0         t2 t1 _  _   n=2
-    // 2  4  0  0         2  2  4  0
-    //              n<2   4  0  4  0
-                         
-    if ( t1 && (t1==t2) )
+    if (a!=0 && a==b)
     {
-        --n;
-        t2 += t1;
-        t1 = 0;
+        a *= 2;
+        b = 0;
+        mov++;
     }
 
-    merge(ln, --n);
+    merge(&ln[mov], n-mov);
 }
 
-bool Board::Move( MoveDir dir )
+bool Game::Move( Direction dir )
 {
-    unsigned save[4][4];
+    unsigned save[COLS][ROWS];
+    unsigned frame[COLS][ROWS];
+
     memcpy(save, board, sizeof(save));
+    memcpy(frame, board, sizeof(frame));
 
-    switch ( dir )
-    {
-        case MoveUp:
-        for ( int x=0; x<4; x++ ) {
-            unsigned tile[4] = { 
-                board[x][0], board[x][1],
-                board[x][2], board[x][3] 
-            };
+    int state = 0;
+    do { 
+    switch (dir) {
+            case UP:
+            for (int x=0; x<COLS; x++) {
+                unsigned tile[COLS] = {
+                    frame[x][0], frame[x][1],
+                    frame[x][2], frame[x][3]
+                };
 
-            slide(tile,4);
-            merge(tile,4);
-            slide(tile,4);
+                if (state==1) merge(tile,COLS);
+                else          slide(tile,COLS);
 
-            board[x][0]=tile[0];
-            board[x][1]=tile[1];
-            board[x][2]=tile[2];
-            board[x][3]=tile[3];
+                frame[x][0]=tile[0];
+                frame[x][1]=tile[1];
+                frame[x][2]=tile[2];
+                frame[x][3]=tile[3];
+            }
+            break;
+
+            case DOWN:
+            for ( int x=0; x<COLS; x++ ) {
+                unsigned tile[COLS] = { 
+                    frame[x][3], frame[x][2],
+                    frame[x][1], frame[x][0] 
+                };
+
+                if (state==1) merge(tile,COLS);
+                else          slide(tile,COLS);
+
+                frame[x][3]=tile[0];
+                frame[x][2]=tile[1];
+                frame[x][1]=tile[2];
+                frame[x][0]=tile[3];
+            }
+            break;
+
+            case RIGHT:
+            for ( int y=0; y<ROWS; y++ ) {
+                unsigned tile[ROWS] = { 
+                    frame[3][y], frame[2][y],
+                    frame[1][y], frame[0][y] 
+                };
+
+                if (state==1) merge(tile,COLS);
+                else          slide(tile,COLS);
+
+                frame[3][y]=tile[0];
+                frame[2][y]=tile[1];
+                frame[1][y]=tile[2];
+                frame[0][y]=tile[3];
+            }
+            break;
+
+            case LEFT:
+            for ( int y=0; y<ROWS; y++ ) {
+                unsigned tile[ROWS] = { 
+                    frame[0][y], frame[1][y],
+                    frame[2][y], frame[3][y]
+                };
+
+                if (state==1) merge(tile,COLS);
+                else          slide(tile,COLS);
+
+                frame[0][y]=tile[0];
+                frame[1][y]=tile[1];
+                frame[2][y]=tile[2];
+                frame[3][y]=tile[3];
+            }
+            break;
         }
-        break;
 
-    case MoveDown:
-        for ( int x=0; x<4; x++ ) {
-            unsigned tile[4] = { 
-                board[x][3], board[x][2],
-                board[x][1], board[x][0] 
-            };
+        usleep(61*1000);
 
-            slide(tile,4);
-            merge(tile,4);
-            slide(tile,4);
+        memcpy(board, frame, sizeof(board));
+        this->Print();
 
-            board[x][3]=tile[0];
-            board[x][2]=tile[1];
-            board[x][1]=tile[2];
-            board[x][0]=tile[3];
-        }
-        break;
-
-    case MoveRight:
-        for ( int y=0; y<4; y++ ) {
-            unsigned tile[4] = { 
-                board[3][y], board[2][y],
-                board[1][y], board[0][y] 
-            };
-
-            slide(tile,4);
-            merge(tile,4);
-            slide(tile,4);
-
-            board[3][y]=tile[0];
-            board[2][y]=tile[1];
-            board[1][y]=tile[2];
-            board[0][y]=tile[3];
-        }
-        break;
-
-    case MoveLeft:
-        for ( int y=0; y<4; y++ ) {
-            unsigned tile[4] = { 
-                board[0][y], board[1][y],
-                board[2][y], board[3][y]
-            };
-
-            slide(tile,4);
-            merge(tile,4);
-            slide(tile,4);
-
-            board[0][y]=tile[0];
-            board[1][y]=tile[1];
-            board[2][y]=tile[2];
-            board[3][y]=tile[3];
-        }
-        break;
-    }
+    } while ( ++state<3 );
 
     if (!memcmp(board, save, sizeof(board)))
         return false;
@@ -171,24 +171,23 @@ bool Board::Move( MoveDir dir )
     return true;
 }
 
-void Board::Print()
+void Game::Print()
 {
-    //puts("\033[?25h\033[0m\033[H\033[2J");
-    for ( int y=0; y<4; y++ )
-    {
-        for ( int x=0; x<4; x++ )
-        {
-            if ( !board[x][y] )
-                printf(". ");
-            else
-                printf("%d ", board[x][y]);
-        }
-        puts("");
+    puts("\033[?25h\033[0m\033[H\033[2J");
+    for ( int y=0; y<ROWS; y++ ) {
+    for ( int x=0; x<COLS; x++ )
+#if 0
+        { printf("%3d ", board[x][y]); }
+#else
+        { if (!board[x][y]) printf("    . "); else printf("%5d ", board[x][y]); }
+#endif
+    puts("\n\r");
     }
+    //puts("\r");
 }
 
 // TODO Split this up
-bool Board::Update()
+bool Game::Update()
 {
     unsigned empty[16][2];
     int n = 0;
@@ -219,61 +218,44 @@ bool Board::Update()
     return true;
 }
 
-// Looks over complicated
-bool Board::GameOver(void)
+bool Game::GameOver(void)
 {
-    bool p1 = this->Peek(MoveUp);
-    bool p2 = this->Peek(MoveRight);
-    bool p3 = this->Peek(MoveDown);
-    bool p4 = this->Peek(MoveLeft);
-
-    if ( p1 || p2 || p3 || p4 )
+    if (!this->Peek())
         return true;
-
     return false;
 }
 
-bool Board::Peek( MoveDir dir )
+bool Game::Peek(void)
 {
     // Look Up
-    for ( int x=0; x<4; x++ )
-    {
-        unsigned tile[4] = { 
+    for ( int x=0; x<COLS; x++ ) {
+        unsigned tile[COLS] = { 
             board[x][3], board[x][2],
             board[x][1], board[x][0] 
         };
 
-        slide(tile,4);
-        merge(tile,4);
-        slide(tile,4);
+        slide(tile,COLS);
+        merge(tile,COLS);
 
-        if (board[x][3] != tile[0] or 
-            board[x][2] != tile[1] or 
-            board[x][1] != tile[2] or 
-            board[x][0] != tile[3])
+        if (board[x][3]!=tile[0] or board[x][2]!=tile[1] or 
+            board[x][1]!=tile[2] or board[x][0]!=tile[3])
             return true;
     }
 
     // Look Left 
-    for ( int y=0; y<4; y++ )
-    {
-        unsigned tile[4] = { 
+    for ( int y=0; y<ROWS; y++ ) {
+        unsigned tile[ROWS] = { 
             board[0][y], board[1][y],
             board[2][y], board[3][y]
         };
 
-        slide(tile,4);
-        merge(tile,4);
-        slide(tile,4);
+        slide(tile,ROWS);
+        merge(tile,ROWS);
 
-        if (board[0][y] != tile[0] or 
-            board[1][y] != tile[1] or 
-            board[2][y] != tile[2] or 
-            board[3][y] != tile[3])
+        if (board[0][y]!=tile[0] or board[1][y]!=tile[1] or 
+            board[2][y]!=tile[2] or board[3][y]!=tile[3])
             return true;
     }
 
     return true;
 }
-
-} // namespace Game
