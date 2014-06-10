@@ -7,14 +7,20 @@
 
 using namespace std;
 
-enum Move { Up, Down, Left, Right };
+enum class Move { Up, Down, Left, Right };
+#define Up      Move::Up
+#define Down    Move::Down
+#define Left    Move::Left
+#define Right   Move::Right
 
 typedef uint16_t            Tile;
 typedef array<Tile,4>       GridLine;
 typedef array<GridLine,4>   _Grid;
 
+typedef pair<int,int>       _Coord;
+typedef vector<_Coord>      CoordList;
+
 struct Grid : _Grid {
-    typedef pair<int,int> grid_iterator;
 
     Grid() { clear(); }
 
@@ -22,6 +28,25 @@ struct Grid : _Grid {
     {
         GridLine _nil = {{0,0,0,0}};
         fill(_nil);
+    }
+
+    void set(_Coord xy, Tile t) 
+    {
+        int x=get<0>(xy);
+        int y=get<1>(xy);
+        auto * me = data();
+        me[x][y] = t;
+    }
+
+    bool isFull()
+    {
+        for ( auto ln = begin(); ln != end(); ln++ )
+        {
+            for ( auto ti : *ln )
+                if ( ti == 0 )
+                    return false;
+        }
+        return true;
     }
 };
 

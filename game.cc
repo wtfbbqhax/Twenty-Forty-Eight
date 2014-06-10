@@ -65,82 +65,67 @@ static unsigned _move(Tile tile[], int n)
     return rval;
 }
 
-#define getCol(grid,n)      \
-{                           \
-    grid[0][n], grid[1][n], \
-    grid[2][n], grid[3][n]  \
-}
-
-#define getRow(grid,n)      \
-{                           \
-    grid[n][0], grid[n][1], \
-    grid[n][2], grid[n][3]  \
-}
-
 void Game::move(Move m)
 {
+    Grid prev = _grid;
     for (int n=0; n<_grid.size(); n++)
-    switch (m)
-    {
-        case Up:
+        switch (m)
         {
-            Tile tile[] = getCol(_grid,n);
-            //Tile tile[] = {_grid[0][n],_grid[1][n],_grid[2][n],_grid[3][n]};
-            _score += _move(tile,_grid.size());
-            _grid[0][n]=tile[0]; _grid[1][n]=tile[1];
-            _grid[2][n]=tile[2]; _grid[3][n]=tile[3];
-            break;
+            case Up:
+            {
+                Tile tile[] = {_grid[0][n],_grid[1][n],_grid[2][n],_grid[3][n]};
+                _score += _move(tile,_grid.size());
+                _grid[0][n]=tile[0]; _grid[1][n]=tile[1];
+                _grid[2][n]=tile[2]; _grid[3][n]=tile[3];
+                break;
+            }
+            case Left:
+            {
+                Tile tile[] = {_grid[n][0],_grid[n][1],_grid[n][2],_grid[n][3]};
+                _score += _move(tile,_grid.size());
+                _grid[n][0]=tile[0]; _grid[n][1]=tile[1];
+                _grid[n][2]=tile[2]; _grid[n][3]=tile[3];
+                break;
+            }
+            case Down:
+            {
+                Tile tile[] = {_grid[3][n],_grid[2][n],_grid[1][n],_grid[0][n]};
+                _score += _move(tile,_grid.size());
+                _grid[3][n]=tile[0]; _grid[2][n]=tile[1];
+                _grid[1][n]=tile[2]; _grid[0][n]=tile[3];
+                break;
+            }
+            case Right:
+            {
+                Tile tile[] = {_grid[n][3],_grid[n][2],_grid[n][1],_grid[n][0]};
+                _score += _move(tile,_grid.size());
+                _grid[n][3]=tile[0]; _grid[n][2]=tile[1];
+                _grid[n][1]=tile[2]; _grid[n][0]=tile[3];
+                break;
+            }
         }
-        case Left:
-        {
-            Tile tile[] = getRow(_grid,n);
-            //Tile tile[] = {_grid[n][0],_grid[n][1],_grid[n][2],_grid[n][3]};
-            _score += _move(tile,_grid.size());
-            _grid[n][0]=tile[0]; _grid[n][1]=tile[1];
-            _grid[n][2]=tile[2]; _grid[n][3]=tile[3];
-            break;
-        }
-        case Down:
-        {
-            Tile tile[] = {_grid[3][n],_grid[2][n],_grid[1][n],_grid[0][n]};
-            _score += _move(tile,_grid.size());
-            _grid[3][n]=tile[0]; _grid[2][n]=tile[1];
-            _grid[1][n]=tile[2]; _grid[0][n]=tile[3];
-            break;
-        }
-        case Right:
-        {
-            Tile tile[] = {_grid[n][3],_grid[n][2],_grid[n][1],_grid[n][0]};
-            _score += _move(tile,_grid.size());
-            _grid[n][3]=tile[0]; _grid[n][2]=tile[1];
-            _grid[n][1]=tile[2]; _grid[n][0]=tile[3];
-            break;
-        }
-    }
 
-    this->gameover = !addRandomTile();
+    if (_grid != prev)
+        addRandomTile();
 
     notify();
 }
 
 bool Game::addRandomTile(Tile tile)
 {
-    vector<pair<int,int> > empty_list;
+    CoordList emptys;
+
+    if ( _grid.isFull() )
+        return false;
 
     for (size_t x=0; x<_grid.size(); x++)
     for (size_t y=0; y<_grid.size(); y++)
         if (!_grid[x][y])
-            empty_list.push_back(make_pair(x,y));
-
-    if (!empty_list.size())
-        return false;
+            emptys.push_back(make_pair(x,y));
 
     srand(unsigned(time(0)));
-    random_shuffle(empty_list.begin(), empty_list.end()); 
-
-    int x = get<0>(empty_list[0]);
-    int y = get<1>(empty_list[0]);
-    _grid[x][y] = tile;
+    random_shuffle(emptys.begin(), emptys.end()); 
+    _grid.set(emptys[0],tile);
 
     return true;
 }
@@ -155,11 +140,13 @@ bool Game::addRandomTile()
 void Display::update()
 {
     Game *game = this->model();
+    Grid grid = game->grid();
 
     cout << "\033[?25h\033[0m\033[H\033[2J" << endl;
     cout << "   Score: " << game->score() << endl;
 
-    for (auto const& line: game->grid())
+
+    for (auto const& line: grid)
     {
         for (auto const& tile: line) 
         {
@@ -176,7 +163,5 @@ void Display::update()
     }
 
     if ( game->gameOver() )
-    {
         cout << "Game Over" << endl;
-    }
 }
