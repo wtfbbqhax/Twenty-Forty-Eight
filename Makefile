@@ -11,4 +11,4 @@ clean:
 	-rm 2048 *.o
 
 .SUFFIXES:
-.SUFFIXES: .cpp .o
+.SUFFIXES: .cc .o
