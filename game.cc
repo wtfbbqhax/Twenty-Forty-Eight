@@ -31,10 +31,12 @@ static void slide(Tile tile[], int n)
     }
 }
 
-static void merge(Tile tile[], int n)
+static unsigned merge(Tile tile[], int n)
 {
+    unsigned rval = 0;
+
     if (n<2)
-        return;
+        return 0;
 
     Tile &a = tile[0];
     Tile &b = tile[1];
@@ -45,16 +47,22 @@ static void merge(Tile tile[], int n)
         a *= 2;
         b = 0;
         mov++;
+
+        rval = a;
     }
 
-    merge(&tile[mov], n-mov);
+    return merge(&tile[mov], n-mov) + rval;
 }
 
-static void _move(Tile tile[], int n)
+static unsigned _move(Tile tile[], int n)
 {
+    unsigned rval = 0;
+
     slide(tile,n);
-    merge(tile,n);
+    rval = merge(tile,n);
     slide(tile,n);
+
+    return rval;
 }
 
 #define getCol(grid,n)      \
@@ -78,7 +86,7 @@ void Game::move(Move m)
         {
             Tile tile[] = getCol(_grid,n);
             //Tile tile[] = {_grid[0][n],_grid[1][n],_grid[2][n],_grid[3][n]};
-            _move(tile,_grid.size());
+            _score += _move(tile,_grid.size());
             _grid[0][n]=tile[0]; _grid[1][n]=tile[1];
             _grid[2][n]=tile[2]; _grid[3][n]=tile[3];
             break;
@@ -87,7 +95,7 @@ void Game::move(Move m)
         {
             Tile tile[] = getRow(_grid,n);
             //Tile tile[] = {_grid[n][0],_grid[n][1],_grid[n][2],_grid[n][3]};
-            _move(tile,_grid.size());
+            _score += _move(tile,_grid.size());
             _grid[n][0]=tile[0]; _grid[n][1]=tile[1];
             _grid[n][2]=tile[2]; _grid[n][3]=tile[3];
             break;
@@ -95,7 +103,7 @@ void Game::move(Move m)
         case Down:
         {
             Tile tile[] = {_grid[3][n],_grid[2][n],_grid[1][n],_grid[0][n]};
-            _move(tile,_grid.size());
+            _score += _move(tile,_grid.size());
             _grid[3][n]=tile[0]; _grid[2][n]=tile[1];
             _grid[1][n]=tile[2]; _grid[0][n]=tile[3];
             break;
@@ -103,7 +111,7 @@ void Game::move(Move m)
         case Right:
         {
             Tile tile[] = {_grid[n][3],_grid[n][2],_grid[n][1],_grid[n][0]};
-            _move(tile,_grid.size());
+            _score += _move(tile,_grid.size());
             _grid[n][3]=tile[0]; _grid[n][2]=tile[1];
             _grid[n][1]=tile[2]; _grid[n][0]=tile[3];
             break;
@@ -149,7 +157,7 @@ void Display::update()
     Game *game = this->model();
 
     cout << "\033[?25h\033[0m\033[H\033[2J" << endl;
-    //cout << "   Score: " << game->score() << endl;
+    cout << "   Score: " << game->score() << endl;
 
     for (auto const& line: game->grid())
     {
