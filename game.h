@@ -1,17 +1,16 @@
-#include <stdint.h>
+#ifndef GAME_H_W7KDWYQ4
+#define GAME_H_W7KDWYQ4
 
-#include <iostream>
 #include <iomanip>
+//#include <ordered_set>
+#include <list>
 #include <vector>
 #include <array>
+#include <stdint.h>
 
 using namespace std;
 
-enum class Move { Up, Down, Left, Right };
-#define Up      Move::Up
-#define Down    Move::Down
-#define Left    Move::Left
-#define Right   Move::Right
+enum Move { Up, Down, Left, Right };
 
 typedef uint16_t            Tile;
 typedef array<Tile,4>       GridLine;
@@ -20,9 +19,17 @@ typedef array<GridLine,4>   _Grid;
 typedef pair<int,int>       _Coord;
 typedef vector<_Coord>      CoordList;
 
-struct Grid : _Grid {
+const list<Tile> tile_values = {
+      0,     2,     4,     8,    16,    32,    64,   128,
+    256,   512,  1024,  2048,  4096,  8192, 16384, 32768,
+};
 
-    Grid() { clear(); }
+
+struct Grid : _Grid {
+    Grid()
+    {
+        clear();
+    }
 
     void clear()
     {
@@ -38,13 +45,26 @@ struct Grid : _Grid {
         me[x][y] = t;
     }
 
+    CoordList findAll(Tile knee)
+    {
+        auto *me = data();
+        CoordList list;
+
+        for (int x = 0; x < size(); x++)
+        for (int y = 0; y < size(); y++)
+            if (me[x][y] == knee)
+              list.push_back(make_pair(x,y));
+
+        return list;
+    }
+
     bool isFull()
     {
-        for ( auto ln = begin(); ln != end(); ln++ )
-        {
-            for ( auto ti : *ln )
-                if ( ti == 0 )
+        for (auto line = begin(); line != end(); line++) {
+            for (auto tile: *line) {
+                if (!tile)
                     return false;
+            }
         }
         return true;
     }
@@ -59,23 +79,34 @@ class Game {
 public:
     Game() { reset(); }
 
-    void reset() {
+    void reset()
+    {
         gameover = false;
         _grid.clear();
         _score = 0;
         addRandomTile();
         addRandomTile();
-        notify();
+        notifyReset();
     } 
 
     Grid grid() { return _grid; } 
     unsigned score() { return _score; }
     bool gameOver() { return gameover; }
-    void move(Move m); // { notify(); };
+    void move(Move m);
     bool addRandomTile();
     bool addRandomTile(Tile val);
+
     void notify();
+    void notifyReset();
     void attach(Observer *obs) { views.push_back(obs); }
+
+    void setGameState(Grid &g, unsigned s)
+    {
+        _grid = g;
+        _score = s;
+        gameover = 0;
+        notify();
+    }
 };
 
 class Observer {
@@ -89,10 +120,14 @@ public:
     }
     virtual ~Observer() { }
     virtual void update() = 0;
+    virtual void reset() = 0;
 };
 
 class Display: public Observer {
 public:
     Display(Game *g): Observer(g) { }
     void update();
+    void reset() {};
 };
+
+#endif /* GAME_H_W7KDWYQ4 */
