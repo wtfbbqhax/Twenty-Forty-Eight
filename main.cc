@@ -9,6 +9,7 @@
 #include <termios.h>
 
 #include "game.h"
+#include "debug.h"
 
 using namespace std;
 
@@ -35,6 +36,8 @@ int main( int argc, char *argv[] )
 {
     Game game;
     Display display(&game);
+    //DebugDisplay display(&game);
+    Undo undo(&game);
 
     struct termios saved, term;
     tcgetattr(STDIN_FILENO, &saved);
@@ -47,6 +50,7 @@ int main( int argc, char *argv[] )
     do {
         switch (UNESCAPE(c)) {
             case 'r': game.reset(); break;
+            case 'u': undo.undo(); break;
             case 'k': game.move(Up); break;
             case 'j': game.move(Down); break;
             case 'l': game.move(Right); break;

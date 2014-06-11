@@ -1,10 +1,10 @@
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <stdlib.h>
 #include <time.h>
-#include <cstring>
+//#include <cstring>
 
-#include <unistd.h>
+//#include <unistd.h>
 #include <assert.h>
 
 #include "game.h"
@@ -13,6 +13,15 @@ void Game::notify()
 {
     for (auto obs : views)
         obs->update();
+}
+
+void Game::notifyReset()
+{
+    for (auto obs : views)
+    {
+        obs->reset();
+        obs->update();
+    }
 }
 
 static void slide(Tile tile[], int n)
@@ -113,18 +122,13 @@ void Game::move(Move m)
 
 bool Game::addRandomTile(Tile tile)
 {
-    CoordList emptys;
-
     if ( _grid.isFull() )
         return false;
 
-    for (size_t x=0; x<_grid.size(); x++)
-    for (size_t y=0; y<_grid.size(); y++)
-        if (!_grid[x][y])
-            emptys.push_back(make_pair(x,y));
+    CoordList emptys = _grid.findAll(0);
 
     srand(unsigned(time(0)));
-    random_shuffle(emptys.begin(), emptys.end()); 
+    random_shuffle(emptys.begin(),emptys.end()); 
     _grid.set(emptys[0],tile);
 
     return true;
@@ -144,7 +148,6 @@ void Display::update()
 
     cout << "\033[?25h\033[0m\033[H\033[2J" << endl;
     cout << "   Score: " << game->score() << endl;
-
 
     for (auto const& line: grid)
     {
