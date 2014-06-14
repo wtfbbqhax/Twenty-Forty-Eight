@@ -42,30 +42,19 @@ public:
     DebugDisplay(Game *g): Observer(g) { }
 
     void reset() {}
+
     void update()
     {
         Game *game = this->model();
         Grid grid = game->grid();
 
-//        cout << "\033[?25h\033[0m\033[H\033[2J" << endl;
         cout << "   Score: " << game->score() << endl;
 
-        //       
-        //            y=0  y=1  y=2  y=3
-        //
-        //     x=0     .    .    2    .
-        //
-        //     x=1     .    .    .    .
-        //
-        //     x=2     .    .    .    .
-        //
-        //     x=3     .    .    .    2
-
-        cout << "         y=0  y=1  y=2  y=3" << endl;
-        for ( int x=0; x < grid.size(); x++)
+        cout << "    Y=    0    1    2    3" << endl;
+        for (int x=0; x < grid.size(); x++)
         {
             cout << "   x=" << x;
-            for ( int y=0; y < grid.size(); y++)
+            for (int y=0; y < grid.size(); y++)
             {
                 Tile tile = grid[x][y];
 

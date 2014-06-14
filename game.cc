@@ -115,9 +115,10 @@ void Game::move(Move m)
         }
 
     if (_grid != prev)
+    {
         addRandomTile();
-
-    notify();
+        notify();
+    }
 }
 
 bool Game::addRandomTile(Tile tile)
