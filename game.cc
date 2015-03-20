@@ -140,7 +140,7 @@ bool Game::addRandomTile()
     Tile _2or4 = (rand() % 100) < 90 ? 2 : 4; 
     return addRandomTile(_2or4);
 }
-
+#if 0
 const char *colors[] = {
     "\033[38;5;63m",
     "\033[38;5;69m",  /* 4    */
@@ -185,8 +185,6 @@ void Display::update()
     Game *game = this->model();
     Grid grid = game->grid();
 
-    char prompt[1024];
-
     cout << "\033[?25h\033[0m\033[H\033[2J"
          << endl
          << "         SCORE: " << game->score() << endl << endl;
@@ -209,3 +207,4 @@ void Display::update()
     if ( game->gameOver() )
         cout << "Game Over" << endl;
 }
+#endif

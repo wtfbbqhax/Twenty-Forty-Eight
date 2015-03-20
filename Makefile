@@ -7,7 +7,7 @@ CXXFLAGS=-std=c++11 -O0 -g -Wall -pedantic -DDEBUG_CMDS
 	$(CXX) $(CXXFLAGS) -o $@ $^ 
 
 game.o: game.h
-main.o: game.h debug.h bbqbot.h
+main.o: game.h display.h debug.h bbqbot.h
 cvar.o: cvar.h 
 glob.o: glob.h
 q_trie.o: q_trie.h

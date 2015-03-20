@@ -99,7 +99,6 @@ public:
     void notify();
     void notifyReset();
     void attach(Observer *obs) { views.push_back(obs); }
-    void prompt();
 
     void setGameState(Grid &g, unsigned s)
     {
@@ -130,13 +129,6 @@ public:
     virtual ~Observer() { }
     virtual void update() = 0;
     virtual void reset() = 0;
-};
-
-class Display: public Observer {
-public:
-    Display(Game *g): Observer(g) { }
-    void update();
-    void reset() {};
 };
 
 #endif /* GAME_H_W7KDWYQ4 */

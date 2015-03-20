@@ -10,6 +10,8 @@
 
 #include "cvar.h"
 #include "game.h"
+
+#include "display.h"
 #include "debug.h"
 
 using namespace std;
@@ -58,17 +60,24 @@ int main( int argc, char *argv[] )
     Cvar_Init();
     g_cheats = Cvar_Get("g_cheats", "0", CVAR_LATCH);
 
-
     int c = 'r';
     do {
-        switch (UNESCAPE(c)) {
+        switch (UNESCAPE(c))
+        {
             case '~': 
                 if (Cvar_CheatsAllowed())
                     Cvar_Set("g_cheats", "0");
                 else
                     Cvar_Set("g_cheats", "1");
+                game.notify();
                 break;
-            case 'r': game.reset(); break;
+            
+
+            case 'r': 
+                    Cvar_Set("g_cheats", "0");
+                    game.reset();
+                    break;
+
             case 'u': 
                     if (Cvar_CheatsAllowed())
                         undo.undo();
@@ -78,6 +87,7 @@ int main( int argc, char *argv[] )
             case 'j': game.move(Down); break;
             case 'l': game.move(Right); break;
             case 'h': game.move(Left); break;
+
             /* TODO Add  command registration  too Display 
              *      for  plugable  debug  commands  inside
              */
@@ -85,6 +95,7 @@ int main( int argc, char *argv[] )
                       if (Cvar_CheatsAllowed())
                         game.insert(1024);
                       break;
+
             case 'q': goto quit;
         }
 	} while ( (c = tolower(getchar())) );

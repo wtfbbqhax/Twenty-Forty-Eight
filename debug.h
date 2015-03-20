@@ -45,7 +45,10 @@ class DebugDisplay: public Observer {
 public:
     DebugDisplay(Game *g): Observer(g) { }
 
-    void reset() {}
+    void reset() 
+    {
+        cout << "[!] RESET" << endl;
+    }
 
     void update()
     {
