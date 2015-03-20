@@ -1,10 +1,6 @@
 #ifndef DEBUG_H_ZQKVK7TG
 #define DEBUG_H_ZQKVK7TG
-
-#include "cvar.h"
 #include "game.h"
-
-extern cvar_t * g_cheats;
 
 class Undo: public Observer {
     struct Record {
@@ -54,10 +50,8 @@ public:
 
         cout << "   Score: " << game->score() << endl;
 
-        cout << "    Y=      0    1    2    3" << endl << endl;
         for (int x=0; x < grid.size(); x++)
         {
-            cout << "   x=" << x << "  ";
             for (int y=0; y < grid.size(); y++)
             {
                 Tile tile = grid[x][y];
@@ -93,8 +87,6 @@ public:
                 cout << endl;
             }
         }
-
-        cout << endl << endl << "g_cheats " << Cvar_GetStringValue(g_cheats) << endl;
     }
 };
 

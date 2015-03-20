@@ -81,9 +81,9 @@ public:
 
     void reset()
     {
-        gameover = false;
         _grid.clear();
         _score = 0;
+        gameover = false;
         addRandomTile();
         addRandomTile();
         notifyReset();
@@ -99,14 +99,23 @@ public:
     void notify();
     void notifyReset();
     void attach(Observer *obs) { views.push_back(obs); }
+    void prompt();
 
     void setGameState(Grid &g, unsigned s)
     {
         _grid = g;
         _score = s;
-        gameover = 0;
+        gameover = false; 
         notify();
     }
+    
+#ifdef DEBUG_CMDS
+    void insert(int v)
+    {
+        addRandomTile(v);
+        notify();
+    }
+#endif
 };
 
 class Observer {

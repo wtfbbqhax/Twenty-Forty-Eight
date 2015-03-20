@@ -141,29 +141,69 @@ bool Game::addRandomTile()
     return addRandomTile(_2or4);
 }
 
+const char *colors[] = {
+    "\033[38;5;63m",
+    "\033[38;5;69m",  /* 4    */
+    "\033[38;5;75m",  /* 8    */
+    "\033[38;5;81m",  /* 16   */
+    "\033[38;5;87m",  /* 32   */
+    "\033[38;5;118m",  /* 64   */
+    "\033[38;5;119m", /* 128  */
+    "\033[38;5;120m", /* 256  */
+    "\033[38;5;190m", /* 512  */
+    "\033[38;5;220m", /* 1024 */
+    "\033[38;5;226m", /* 2048 */
+};
+
+/* TODO: Identify out a oneliner bitshift to
+ *       replace  this  brainfart   solution.
+ */
+static inline const char *
+tile_color(Tile t)
+{
+    switch (t) {
+    case 2: return colors[ 0 ];    
+    case 4: return colors[ 1 ];    
+    case 8: return colors[ 2 ];    
+    case 16: return colors[ 3 ];   
+    case 32: return colors[ 4 ];   
+    case 64: return colors[ 5 ];   
+    case 128: return colors[ 6 ];  
+    case 256: return colors[ 7 ];  
+    case 512: return colors[ 8 ];  
+    case 1024: return colors[ 9 ]; 
+    // Highlighting logic bombs after surpassing
+    // 2048  tile.  Just  like  the  real  game!
+    case 2048: return colors[ 10 ];
+    default: return "";
+    }
+}
+
 // Observers
 void Display::update()
 {
     Game *game = this->model();
     Grid grid = game->grid();
 
-    cout << "\033[?25h\033[0m\033[H\033[2J" << endl;
-    cout << "   Score: " << game->score() << endl;
+    char prompt[1024];
 
+    cout << "\033[?25h\033[0m\033[H\033[2J"
+         << endl
+         << "         SCORE: " << game->score() << endl << endl;
     for (auto const& line: grid)
     {
         for (auto const& tile: line) 
         {
             if (!tile)
             {
-                cout << "    .";
+                cout << "         .";
             }
             else
             {
-                cout << setw(5) << tile;
+                cout << tile_color(tile) << setw(10) << tile << "\033[0m";
             }
         }
-        cout << endl << endl;
+        cout << endl << endl << endl << endl;
     }
 
     if ( game->gameOver() )
