@@ -97,6 +97,12 @@ int main( int argc, char *argv[] )
                       break;
 
             case 'q': goto quit;
+            default: 
+            {
+                FILE *fp = fopen("trace.txt","a");
+                fprintf(fp, "%i",c);
+                fclose(fp);
+            }
         }
 	} while ( (c = tolower(getchar())) );
 
