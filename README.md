@@ -6,6 +6,7 @@ A WIP [2048][1] ([_github_][2]) clone for the terminal; WIP is shorthand for _Wo
 See the [ISSUES][3] file in the repository for a collection of known issues.
 
 ![Screenshot](Screenshot.png)
+![How To Lose 6 Games at Once!](Screenshot_how_to_lose_6_games_at_once.png)
 
 ## See Also
 
