@@ -65,10 +65,6 @@ float        Cvar_Value(const char *name);
 const char * Cvar_String(const char *name);
 int          Cvar_Integer(const char *name);
 
-//cvar_t * Cvar_Get(const char *name, const char *value, cvar_flag_t flags);
-//cvar_t * Cvar_ForceSet(const char *name, const char *value);
-//cvar_t * Cvar_Set(const char *name, const char *value);
-//cvar_t * Cvar_FullSet(const char *name, const char *value, cvar_flag_t flags, bool overwrite);
 cvar_t * Cvar_Find(const char *name);
 
 char *Cvar_UserInfo(void);

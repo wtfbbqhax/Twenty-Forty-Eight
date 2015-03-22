@@ -5,6 +5,7 @@
 #include "game.h"
 
 extern cvar_t * g_cheats;
+extern cvar_t * g_drawResetAnim;
 
 class Undo: public Observer {
     struct Record {
@@ -97,7 +98,10 @@ public:
             }
         }
 
-        cout << endl << endl << "g_cheats " << Cvar_GetStringValue(g_cheats) << endl;
+        cout <<  "g_cheats "
+             <<  Cvar_GetStringValue(g_cheats) <<  endl
+             <<  "g_drawResetAnim "
+             <<  Cvar_GetStringValue(g_drawResetAnim) <<  endl;
     }
 };
 

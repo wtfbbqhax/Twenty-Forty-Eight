@@ -25,6 +25,8 @@ const list<Tile> tile_values = {
 };
 
 
+uint64_t Random();
+
 struct Grid : _Grid {
     Grid()
     {

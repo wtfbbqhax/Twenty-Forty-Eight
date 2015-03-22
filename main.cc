@@ -22,6 +22,7 @@ enum {
 
 cvar_t * g_debug;
 cvar_t * g_cheats;
+cvar_t * g_drawResetAnim;
 
 // Escape sequence '^['.
 // Adds support for the arrow keys.
@@ -58,31 +59,61 @@ int main( int argc, char *argv[] )
 
     Cvar_PreInit();
     Cvar_Init();
-    g_cheats = Cvar_Get("g_cheats", "0", CVAR_LATCH);
+
+    g_cheats        = Cvar_Get("g_cheats", "0", CVAR_LATCH);
+    g_drawResetAnim = Cvar_Get("g_drawResetAnim", "1", CVAR_LATCH);
 
     int c = 'r';
     do {
         switch (UNESCAPE(c))
         {
+            //
+            // Toggle Cheats 
+            //
+            // "u" to undo.
+            // "i" to spray tiles.
+            //
             case '~': 
-                if (Cvar_CheatsAllowed())
-                    Cvar_Set("g_cheats", "0");
-                else
-                    Cvar_Set("g_cheats", "1");
-                game.notify();
-                break;
+
+             tcsetattr(STDIN_FILENO, TCSANOW, &saved);
+             display.Console();
+             tcsetattr(STDIN_FILENO, TCSANOW, &term);
+
+             //if (Cvar_CheatsAllowed())
+             //    Cvar_Set("g_cheats", "0");
+             //else
+             //    Cvar_Set("g_cheats", "1");
+             //game.notify();
+             break;
             
+            //
+            // Enable or Disable the _Tile Waterfall_ reset
+            // effect.
+            //
+            case '@': 
+             if (Cvar_GetIntegerValue(g_drawResetAnim) > 0)
+                 Cvar_Set("g_drawResetAnim", "0");
+             else
+                 Cvar_Set("g_drawResetAnim", "1");
+             break;
 
             case 'r': 
-                    Cvar_Set("g_cheats", "0");
-                    game.reset();
-                    break;
+             // TODO: Reset CVAR_LATCH vars
+             //Cvar_Set("g_cheats", "0");
+             game.reset();
+             break;
 
+            // 
+            // Undo move
+            //
             case 'u': 
-                    if (Cvar_CheatsAllowed())
-                        undo.undo();
-                    break;
+             if (Cvar_CheatsAllowed())
+                 undo.undo();
+             break;
 
+            //
+            // Up-Down-Left-Right controls
+            //
             case 'k': game.move(Up); break;
             case 'j': game.move(Down); break;
             case 'l': game.move(Right); break;
@@ -92,18 +123,23 @@ int main( int argc, char *argv[] )
              *      for  plugable  debug  commands  inside
              */
             case 'i':
-                      if (Cvar_CheatsAllowed())
-                        game.insert(1024);
-                      break;
+              if (Cvar_CheatsAllowed())
+              {
+                game.insert(8);
+                game.insert(16);
+                game.insert(32);
+                game.insert(64);
+                game.insert(128);
+                game.insert(256);
+                game.insert(512);
+                game.insert(1024);
+                game.insert(2048);
+              }
+              break;
 
             case 'q': goto quit;
-            default: 
-            {
-                FILE *fp = fopen("trace.txt","a");
-                fprintf(fp, "%i",c);
-                fclose(fp);
-            }
         }
+    //} while (true);
 	} while ( (c = tolower(getchar())) );
 
 quit:

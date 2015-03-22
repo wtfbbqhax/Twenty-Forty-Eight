@@ -1,3 +1,7 @@
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <unistd.h>
 #include <iostream>
 //#include <stdio.h>
 //#include <stdlib.h>
@@ -139,6 +143,48 @@ uint64_t Random()
     return value;
 }
 
+
+unsigned int devrand(void)
+{
+    int fn;
+    unsigned int r;
+
+    fn = open("/dev/urandom", O_RDONLY);
+    if (fn == -1)
+        assert(false);
+
+    if ( read(fn, &r, 4) != 4)
+        assert(false);
+
+    close(fn);
+    return r;
+}
+
+static unsigned int x = 20226789,y = 362493900,z = 521285629,c = 76543221;
+/* Initialise KISS generator using /dev/urandom */
+void init_KISS()
+{
+    x = devrand();
+    while (!(y = devrand())); /* y must not b e zero !  */
+    z = devrand();
+    c = devrand() % 698769068 + 1;
+}
+/* Seed variables */
+unsigned int KISS()
+{
+    unsigned long long t, a = 698769069ULL;
+    x = 69069*x+12345;
+    y ^= (y<<13);
+    y ^= (y>>17);
+    y ^= (y<<5);
+    /* y must never be set to zero! */
+    t = a*z+c;
+    c = (t>>32);
+    /* Also a void setting z=c=0! */
+    return x+y+(z=t);
+}
+
+
 bool Game::addRandomTile(Tile tile)
 {
     if ( _grid.isFull() )
@@ -146,8 +192,9 @@ bool Game::addRandomTile(Tile tile)
 
     CoordList emptys = _grid.findAll(0);
 
-    //srand(unsigned(time(0)));
-    srand(Random());
+    //srand(unsigned(time(0));
+    init_KISS();
+    srand(KISS());
     random_shuffle(emptys.begin(),emptys.end()); 
     _grid.set(emptys[0],tile);
 

@@ -342,11 +342,36 @@ void Cvar_Init(void)
 
 void Cvar_Shutdown(void)
 {
+    struct trie_dump_s *dump;
+    int i;
+
+    assert(s_cvar_preinitialized);
+    assert(s_cvar_initialized);
+    assert(s_cvar_trie);
+
+    pthread_mutex_lock(&s_cvar_mutex);
+    Trie_Dump(s_cvar_trie, "", TRIE_DUMP_VALUES, &dump);
+    pthread_mutex_unlock(&s_cvar_mutex);
+
+    for( i = 0; i < dump->size; ++i ) {
+         cvar_t *const var = dump->key_value_vector[ i ].value;
+
+         if( var->string )
+            free(var->string);
+         if( var->dvalue )
+            free(var->dvalue);
+        free(var);
+    }
+
+    Trie_FreeDump( dump );
+    s_cvar_initialized = false;
+
     pthread_mutex_lock(&s_cvar_mutex);
     Trie_Destroy(s_cvar_trie);
-    s_cvar_trie = NULL;
-    s_cvar_initialized = false;
-    s_cvar_preinitialized = false;
     pthread_mutex_unlock(&s_cvar_mutex);
+
+    s_cvar_trie = NULL;
+    s_cvar_preinitialized = false;
+
     pthread_mutex_destroy(&s_cvar_mutex);
 }
