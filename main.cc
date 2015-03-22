@@ -24,6 +24,7 @@ cvar_t * g_debug;
 cvar_t * g_cheats;
 cvar_t * g_drawResetAnim;
 cvar_t * g_console;
+cvar_t * g_consoleSize;
 
 // Escape sequence '^['.
 // Adds support for the arrow keys.
@@ -65,43 +66,21 @@ int main( int argc, char *argv[] )
 
     g_cheats        = Cvar_Get("g_cheats", "0", CVAR_LATCH);
     g_drawResetAnim = Cvar_Get("g_drawResetAnim", "1", CVAR_LATCH);
-    g_console       = Cvar_Get("g_console", "0", 0);
+    g_console       = Cvar_Get("console", "0", 0);
+    g_consoleSize   = Cvar_Get("consoleSize", "10", 0);
 
     int c = 'r';
     do {
         switch (UNESCAPE(c))
         {
-            //
-            // Toggle Cheats 
-            //
-            // "u" to undo.
-            // "i" to spray tiles.
-            //
             case '~': 
              if (Cvar_GetIntegerValue(g_console) > 0)
-                 Cvar_Set("g_console", "0");
+                 Cvar_Set("console", "0");
              else
-                 Cvar_Set("g_console", "1");
+                 Cvar_Set("console", "1");
              game.notify();
-
-             //if (Cvar_CheatsAllowed())
-             //    Cvar_Set("g_cheats", "0");
-             //else
-             //    Cvar_Set("g_cheats", "1");
-             //game.notify();
              break;
             
-            //
-            // Enable or Disable the _Tile Waterfall_ reset
-            // effect.
-            //
-            case '@': 
-             if (Cvar_GetIntegerValue(g_drawResetAnim) > 0)
-                 Cvar_Set("g_drawResetAnim", "0");
-             else
-                 Cvar_Set("g_drawResetAnim", "1");
-             break;
-
             case 'r': 
              // TODO: Reset CVAR_LATCH vars
              //Cvar_Set("g_cheats", "0");

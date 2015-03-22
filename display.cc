@@ -13,8 +13,8 @@
 extern struct termios saved, term;
 extern cvar_t * g_drawResetAnim;
 extern cvar_t * g_console;
+extern cvar_t * g_consoleSize;
 
-#define HISTORY_MAX 10
 
 const char **colors;
 const char *blues[] = {
@@ -87,18 +87,18 @@ static inline const char *
 tile_color(Tile t)
 {
     switch (t) {
-    case 2: return colors[ 0 ];    
-    case 4: return colors[ 1 ];    
-    case 8: return colors[ 2 ];    
-    case 16: return colors[ 3 ];   
-    case 32: return colors[ 4 ];   
-    case 64: return colors[ 7 ];  
-    case 128: return colors[ 6 ];  
-    case 256: return colors[ 5 ];   
-    case 512: return colors[ 8 ];  
-    case 1024: return colors[ 9 ]; 
-    case 2048: return colors[ 10 ];
-    default: return "";
+        case 2: return colors[ 0 ];    
+        case 4: return colors[ 1 ];    
+        case 8: return colors[ 2 ];    
+        case 16: return colors[ 3 ];   
+        case 32: return colors[ 4 ];   
+        case 64: return colors[ 7 ];  
+        case 128: return colors[ 6 ];  
+        case 256: return colors[ 5 ];   
+        case 512: return colors[ 8 ];  
+        case 1024: return colors[ 9 ]; 
+        case 2048: return colors[ 10 ];
+        default: return "";
     }
 }
 
@@ -144,7 +144,6 @@ void Display::drawWaterfall(void)
                 << endl;
             usleep(9600);
         }
-        //usleep(50000);
     }
 }
 
@@ -162,7 +161,8 @@ void Display::reset(void)
     clearScreen();
 
     int i = rand() % 5;
-    switch (i) {
+    switch (i)
+    {
         case 0:
             colors = blues;
             break;
@@ -241,7 +241,7 @@ void Display::update(void)
     {
         tcsetattr(STDIN_FILENO, TCSANOW, &saved);
         for (unsigned n=0; n<console.size(); ++n) {
-            if (console.size() > HISTORY_MAX)
+            if (console.size() > g_consoleSize->integer)
                 console.erase(console.begin());
 
             cout << "|> " << console.at( n ) << endl;
