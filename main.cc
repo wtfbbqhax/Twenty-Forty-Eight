@@ -23,6 +23,7 @@ enum {
 cvar_t * g_debug;
 cvar_t * g_cheats;
 cvar_t * g_drawResetAnim;
+cvar_t * g_console;
 
 // Escape sequence '^['.
 // Adds support for the arrow keys.
@@ -43,14 +44,16 @@ int UNESCAPE(int c)
     return c;
 }
 
+struct termios saved, term;
+Game game;
+
 int main( int argc, char *argv[] )
 {
-    Game game;
     Display display(&game);
     //DebugDisplay display(&game);
     Undo undo(&game);
 
-    struct termios saved, term;
+//    struct termios saved, term;
     tcgetattr(STDIN_FILENO, &saved);
     term = saved;
 
@@ -62,6 +65,7 @@ int main( int argc, char *argv[] )
 
     g_cheats        = Cvar_Get("g_cheats", "0", CVAR_LATCH);
     g_drawResetAnim = Cvar_Get("g_drawResetAnim", "1", CVAR_LATCH);
+    g_console       = Cvar_Get("g_console", "0", 0);
 
     int c = 'r';
     do {
@@ -74,10 +78,11 @@ int main( int argc, char *argv[] )
             // "i" to spray tiles.
             //
             case '~': 
-
-             tcsetattr(STDIN_FILENO, TCSANOW, &saved);
-             display.Console();
-             tcsetattr(STDIN_FILENO, TCSANOW, &term);
+             if (Cvar_GetIntegerValue(g_console) > 0)
+                 Cvar_Set("g_console", "0");
+             else
+                 Cvar_Set("g_console", "1");
+             game.notify();
 
              //if (Cvar_CheatsAllowed())
              //    Cvar_Set("g_cheats", "0");

@@ -110,13 +110,11 @@ public:
         notify();
     }
     
-#ifdef DEBUG_CMDS
     void insert(int v)
     {
         addRandomTile(v);
         notify();
     }
-#endif
 };
 
 class Observer {

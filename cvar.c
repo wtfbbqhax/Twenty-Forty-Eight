@@ -85,12 +85,12 @@ Cvar_Get(const char *var_name, const char *var_value, cvar_flag_t flags)
     if (!var_name || !var_name[0])
         return NULL;
 
-    if (!var_value)
-        return NULL;
-
     pthread_mutex_lock(&s_cvar_mutex);
     Trie_Find(s_cvar_trie, var_name, TRIE_EXACT_MATCH, (void**)&var);
     pthread_mutex_unlock(&s_cvar_mutex);
+
+    if (!var_value)
+        return var;
 
     //
     // Update and return a pre-existing cvar
