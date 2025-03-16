@@ -2,6 +2,7 @@
 
 #include <termios.h>
 #include <unistd.h>
+
 #include "q_trie.h"
 #include "cvar.h"
 #include "prompt.h"
@@ -121,15 +122,18 @@ void Display::drawWaterfall(void)
                 = "";
             int idx=0;
 
-            for (int j = 0; j < 4; ++j) 
-            {
+
+            // Create a distribution range
+            std::uniform_int_distribution<int> uni(0, 99);
+
+            for (int j = 0; j < 4; ++j) {
 #define MARGIN  60
-                Tile _2or4orEtc = (rand() % 100) < MARGIN ?    2
-                                : (rand() % 100) < MARGIN ?    4
-                                : (rand() % 100) < MARGIN ?   16
-                                : (rand() % 100) < MARGIN ?   64
-                                : (rand() % 100) < MARGIN ?  256
-                                : (rand() % 100) < MARGIN ? 1024
+                Tile _2or4orEtc = uni(rng) < MARGIN ?    2
+                                : uni(rng) < MARGIN ?    4
+                                : uni(rng) < MARGIN ?   16
+                                : uni(rng) < MARGIN ?   64
+                                : uni(rng) < MARGIN ?  256
+                                : uni(rng) < MARGIN ? 1024
                                 : 2048; 
                 linecolors[idx] = tile_color(_2or4orEtc);
                 ++idx;
@@ -160,7 +164,8 @@ void Display::reset(void)
 {
     clearScreen();
 
-    int i = rand() % 5;
+    std::uniform_int_distribution<int> dist(0, 4);
+    int i = dist(rng);
     switch (i)
     {
         case 0:

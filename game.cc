@@ -140,6 +140,10 @@ bool Game::addRandomTile(Tile tile)
 
 bool Game::addRandomTile()
 {
-    Tile _2or4 = (rand() % 100) < 90 ? 2 : 4; 
+    std::random_device rd;
+    std::mt19937 rng(rd());
+    std::discrete_distribution<int> dist {{90, 10}};
+
+    Tile _2or4 = dist(rng) == 0 ? 2 : 4;
     return addRandomTile(_2or4);
 }
