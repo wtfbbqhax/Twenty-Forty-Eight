@@ -343,7 +343,6 @@ void Cvar_Init(void)
 void Cvar_Shutdown(void)
 {
     struct trie_dump_s *dump;
-    int i;
 
     assert(s_cvar_preinitialized);
     assert(s_cvar_initialized);
@@ -353,7 +352,7 @@ void Cvar_Shutdown(void)
     Trie_Dump(s_cvar_trie, "", TRIE_DUMP_VALUES, &dump);
     pthread_mutex_unlock(&s_cvar_mutex);
 
-    for( i = 0; i < dump->size; ++i ) {
+    for( size_t i = 0; i < dump->size; ++i ) {
          cvar_t *const var = dump->key_value_vector[ i ].value;
 
          if( var->string )

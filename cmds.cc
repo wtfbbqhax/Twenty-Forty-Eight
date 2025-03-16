@@ -25,13 +25,13 @@ void Trace(void)
 }
 
 static Command s_commands[] = {
-    { "close", [](Game*g){ Cvar_Set("console", "0"); } },
+    { "close", [](Game*) { Cvar_Set("console", "0"); } },
     { "down",  [](Game*g){ g->move(Down);            } },
     { "left",  [](Game*g){ g->move(Left);            } },
-    { "quit",  [](Game*g){ exit(0);                  } },
+    { "quit",  [](Game*) { exit(0);                  } },
     { "reset", [](Game*g){ g->reset( );              } },
     { "right", [](Game*g){ g->move(Right);           } },
-    { "set",   [](Game*g){ Cvar_Set(Cmd_Argv(1), Cmd_Argv(2)); } },
+    { "set",   [](Game*) { Cvar_Set(Cmd_Argv(1), Cmd_Argv(2)); } },
     { "up",    [](Game*g){ g->move(Up);              } },
 };
 

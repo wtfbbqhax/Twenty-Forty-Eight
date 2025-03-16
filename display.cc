@@ -241,7 +241,8 @@ void Display::update(void)
     {
         tcsetattr(STDIN_FILENO, TCSANOW, &saved);
         for (unsigned n=0; n<console.size(); ++n) {
-            if (console.size() > g_consoleSize->integer)
+            size_t _size = (g_consoleSize->integer > 0) ? g_consoleSize->integer : 0;
+            if (console.size() > _size)
                 console.erase(console.begin());
 
             cout << "|> " << console.at( n ) << endl;

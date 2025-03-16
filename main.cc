@@ -48,7 +48,7 @@ int UNESCAPE(int c)
 struct termios saved, term;
 Game game;
 
-int main( int argc, char *argv[] )
+int main()
 {
     Display display(&game);
     //DebugDisplay display(&game);
@@ -123,7 +123,6 @@ int main( int argc, char *argv[] )
 
             case 'q': goto quit;
         }
-    //} while (true);
 	} while ( (c = tolower(getchar())) );
 
 quit:
