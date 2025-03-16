@@ -46,10 +46,10 @@ int UNESCAPE(int c)
 }
 
 struct termios saved, term;
-Game game;
 
 int main()
 {
+    Game game;
     Display display(&game);
     //DebugDisplay display(&game);
     Undo undo(&game);
