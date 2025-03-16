@@ -1,15 +1,13 @@
+#include <assert.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/uio.h>
-#include <unistd.h>
-#include <iostream>
-//#include <stdio.h>
-//#include <stdlib.h>
 #include <time.h>
-//#include <cstring>
+#include <unistd.h>
 
-//#include <unistd.h>
-#include <assert.h>
+#include <algorithm>
+#include <random>
+#include <iostream>
 
 #include "game.h"
 
@@ -81,7 +79,7 @@ static unsigned _move(Tile tile[], int n)
 void Game::move(Move m)
 {
     Grid prev = _grid;
-    for (int n=0; n<_grid.size(); n++)
+    for (size_t n=0; n<_grid.size(); n++)
         switch (m)
         {
             case Up:
@@ -125,77 +123,16 @@ void Game::move(Move m)
     }
 }
 
-uint64_t Random()
-{
-    uint64_t value = 0;
-    int i;
-
-    FILE *fp = fopen("/dev/random", "r");
-    if (!fp)
-    {
-        return time(0);
-    }
-    for (i=0; i<sizeof(value); i++) {
-        value <<= 8;
-        value |= fgetc(fp);
-    }
-    fclose(fp);
-    return value;
-}
-
-
-unsigned int devrand(void)
-{
-    int fn;
-    unsigned int r;
-
-    fn = open("/dev/urandom", O_RDONLY);
-    if (fn == -1)
-        assert(false);
-
-    if ( read(fn, &r, 4) != 4)
-        assert(false);
-
-    close(fn);
-    return r;
-}
-
-static unsigned int x = 20226789,y = 362493900,z = 521285629,c = 76543221;
-/* Initialise KISS generator using /dev/urandom */
-void init_KISS()
-{
-    x = devrand();
-    while (!(y = devrand())); /* y must not b e zero !  */
-    z = devrand();
-    c = devrand() % 698769068 + 1;
-}
-/* Seed variables */
-unsigned int KISS()
-{
-    unsigned long long t, a = 698769069ULL;
-    x = 69069*x+12345;
-    y ^= (y<<13);
-    y ^= (y>>17);
-    y ^= (y<<5);
-    /* y must never be set to zero! */
-    t = a*z+c;
-    c = (t>>32);
-    /* Also a void setting z=c=0! */
-    return x+y+(z=t);
-}
-
-
 bool Game::addRandomTile(Tile tile)
 {
     if ( _grid.isFull() )
         return false;
 
     CoordList emptys = _grid.findAll(0);
-
-    //srand(unsigned(time(0));
-    init_KISS();
-    srand(KISS());
-    random_shuffle(emptys.begin(),emptys.end()); 
+    
+    std::random_device rd;
+    std::mt19937 rng(rd());
+    std::shuffle(emptys.begin(), emptys.end(), rng);
     _grid.set(emptys[0],tile);
 
     return true;

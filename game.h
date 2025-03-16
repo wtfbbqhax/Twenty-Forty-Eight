@@ -25,8 +25,6 @@ const list<Tile> tile_values = {
 };
 
 
-uint64_t Random();
-
 struct Grid : _Grid {
     Grid()
     {
@@ -41,8 +39,8 @@ struct Grid : _Grid {
 
     void set(_Coord xy, Tile t) 
     {
-        int x=get<0>(xy);
-        int y=get<1>(xy);
+        size_t x=get<0>(xy);
+        size_t y=get<1>(xy);
         auto * me = data();
         me[x][y] = t;
     }
@@ -52,8 +50,8 @@ struct Grid : _Grid {
         auto *me = data();
         CoordList list;
 
-        for (int x = 0; x < size(); x++)
-        for (int y = 0; y < size(); y++)
+        for (size_t x = 0; x < size(); x++)
+        for (size_t y = 0; y < size(); y++)
             if (me[x][y] == knee)
               list.push_back(make_pair(x,y));
 

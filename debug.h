@@ -59,10 +59,10 @@ public:
         cout << "   Score: " << game->score() << endl;
 
         cout << "    Y=      0    1    2    3" << endl << endl;
-        for (int x=0; x < grid.size(); x++)
+        for (size_t x=0; x < grid.size(); x++)
         {
             cout << "   x=" << x << "  ";
-            for (int y=0; y < grid.size(); y++)
+            for (size_t y=0; y < grid.size(); y++)
             {
                 Tile tile = grid[x][y];
 
